@@ -1,0 +1,32 @@
+:root {
+  --ink: #0c0c0d;
+  --ink-2: #161615;
+  --cream: #f2ecdd;
+  --body-text: #b6b0a2;
+  --gold: #e0a53c;
+  --cyan: #2fb6c4;
+  --magenta: #dd4a80;
+  --line: rgba(242, 236, 221, 0.14);
+}
+
+html,
+body {
+  scroll-padding-top: 84px;
+}
+
+body {
+  background-color: var(--ink);
+  color: var(--body-text);
+  font-family: "Work Sans", sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}

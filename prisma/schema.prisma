@@ -1,0 +1,51 @@
+// Future upgrade path: SQLite/PostgreSQL.
+// Abhi app JSON file store (`src/lib/db/store.ts`) use kar rahi hai,
+// taaki kisi native dependency ke bina chale. Ye schema usi ke as per mapping hai.
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  category    String
+  description String
+  icon        String
+  priceFrom   Int?
+  sizeRange   String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  customer   String
+  phone      String
+  product    String
+  quantity   Int      @default(1)
+  size       String?
+  designNote String?
+  status     String   @default("NEW")
+  createdAt  DateTime @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}

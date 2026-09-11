@@ -1,0 +1,55 @@
+{
+  "products": [
+    { "id": "p-tshirt", "slug": "t-shirt", "name": "T-Shirt Printing", "category": "Apparel", "description": "Your design, any size", "icon": "👕", "priceFrom": 149, "sizeRange": "S - XXL", "isActive": true, "sortOrder": 1 },
+    { "id": "p-hoodie", "slug": "hoodie", "name": "Hoodie Printing", "category": "Apparel", "description": "Cozy fits, bold prints", "icon": "🧥", "priceFrom": 499, "sizeRange": "S - XXL", "isActive": true, "sortOrder": 2 },
+    { "id": "p-jersey", "slug": "jersey", "name": "Jersey Printing", "category": "Apparel", "description": "Team names & numbers", "icon": "🎽", "priceFrom": 399, "sizeRange": "S - XXL", "isActive": true, "sortOrder": 3 },
+    { "id": "p-mug", "slug": "mug", "name": "Mug Printing", "category": "Drinkware", "description": "Coffee tastes better custom", "icon": "☕", "priceFrom": 99, "sizeRange": null, "isActive": true, "sortOrder": 4 },
+    { "id": "p-cup", "slug": "cup", "name": "Cup Printing", "category": "Drinkware", "description": "For every celebration", "icon": "🥤", "priceFrom": 149, "sizeRange": null, "isActive": true, "sortOrder": 5 },
+    { "id": "p-bottle", "slug": "bottle", "name": "Bottle Printing", "category": "Drinkware", "description": "Personalised, everyday", "icon": "🧴", "priceFrom": 199, "sizeRange": null, "isActive": true, "sortOrder": 6 },
+    { "id": "p-mobile-cover", "slug": "mobile-cover", "name": "Mobile Cover Printing", "category": "Accessories", "description": "Wrap your phone your way", "icon": "📱", "priceFrom": 99, "sizeRange": "Any model", "isActive": true, "sortOrder": 7 },
+    { "id": "p-bag", "slug": "bag", "name": "Bag Printing", "category": "Accessories", "description": "Carry your own design", "icon": "👜", "priceFrom": 149, "sizeRange": null, "isActive": true, "sortOrder": 8 },
+    { "id": "p-keyring", "slug": "keyring", "name": "KeyRing Printing", "category": "Accessories", "description": "Small gift, big smile", "icon": "🔑", "priceFrom": 49, "sizeRange": null, "isActive": true, "sortOrder": 9 },
+    { "id": "p-cushion", "slug": "cushion", "name": "Cushion Printing", "category": "Home & Gifts", "description": "Photos you can hug", "icon": "🛋️", "priceFrom": 249, "sizeRange": null, "isActive": true, "sortOrder": 10 },
+    { "id": "p-photo-frame", "slug": "photo-frame", "name": "Photo Frame Printing", "category": "Home & Gifts", "description": "Frame the good memories", "icon": "🖼️", "priceFrom": 149, "sizeRange": null, "isActive": true, "sortOrder": 11 },
+    { "id": "p-custom-gift", "slug": "custom-gifts", "name": "Custom Gifts", "category": "Home & Gifts", "description": "Not sure? We'll design it", "icon": "🎁", "priceFrom": null, "sizeRange": null, "isActive": true, "sortOrder": 12 }
+  ],
+  "orders": [
+    {
+      "id": "ord-1001",
+      "customer": "Rahul Verma",
+      "phone": "9876543210",
+      "product": "T-Shirt Printing",
+      "quantity": 10,
+      "size": "L",
+      "designNote": "College fest logo, 10 pcs red background",
+      "status": "CONFIRMED",
+      "createdAt": "2026-09-09T11:20:00.000Z"
+    },
+    {
+      "id": "ord-1002",
+      "customer": "Priya Sahu",
+      "phone": "9123456780",
+      "product": "Mug Printing",
+      "quantity": 2,
+      "size": null,
+      "designNote": "Birthday photo mugs",
+      "status": "NEW",
+      "createdAt": "2026-09-10T16:45:00.000Z"
+    }
+  ],
+  "admins": [
+    {
+      "email": "admin@arprint.in",
+      "name": "Admin",
+      "passwordHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"
+    }
+  ],
+  "settings": {
+    "phone": "+917999865547",
+    "whatsapp": "917999865547",
+    "instagram": "ar_printing_service",
+    "address": "Bagicha, Jashpur",
+    "offerTitle": "Ordering For A Group?",
+    "offerBadge": "Special Offer"
+  }
+}
