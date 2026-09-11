@@ -60,13 +60,10 @@ npm start
 
 ## Admin Login
 
-| Field    | Value                 |
-|----------|-----------------------|
-| URL      | `http://localhost:3000/login` |
-| Email    | `admin@arprint.in`    |
-| Password | `admin123`            |
+- URL: `http://localhost:3000/login`
+- Credentials are stored (hashed) in `data/db.json` → `admins`. See `src/data/seed.json` for the default development credentials.
 
-> **Important:** Change the default password before going live. It is stored (hashed) in `data/db.json` → `admins` → `passwordHash`.
+> **Important:** Change the default admin password and email **before going live** — the repo is public.
 
 ## Scripts
 
