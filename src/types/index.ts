@@ -7,6 +7,7 @@ export interface Product {
   category: Category;
   description: string;
   icon: string;
+  image?: string | null;
   priceFrom: number | null;
   sizeRange: string | null;
   isActive: boolean;
@@ -21,6 +22,7 @@ export interface Order {
   quantity: number;
   size: string | null;
   designNote: string | null;
+  design?: string | null;
   status:
     | "NEW"
     | "CONFIRMED"

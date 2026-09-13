@@ -1,4 +1,8 @@
-"use client";
+import { getProducts, getSettings } from "@/lib/db/store";
+import TopNav from "@/components/TopNav";
+import RevealObserver from "@/components/RevealObserver";
+
+export const dynamic = "force-dynamic";
 
 /**
  * AR. Printing Service & Gift Gallery — Homepage
@@ -6,8 +10,8 @@
  * Default exports this page in Next.js App Router (src/app/page.tsx).
  * Design ported from reference/AR_Printing_Service.html
  *
- * NOTE: Ye file self-contained hai (styles + interactivity isi mein).
- * Data abhi static hai; baad mein DB/API se aayega.
+ * Products aur Settings ab DB (data/db.json) se aate hain — admin panel se
+ * change karo to Home par turant dikhte hain.
  */
 
 const BUSINESS = {
@@ -16,38 +20,24 @@ const BUSINESS = {
   sub: "✛ Print & Gift Studio",
   phone: "+917999865547",
   phoneDisplay: "7999865547",
-  whatsapp:
-    "https://wa.me/917999865547?text=Hi!%20I%20am%20interested%20in%20your%20printing%20services.",
-  orderWa:
-    "https://wa.me/917999865547?text=Hi!%20I%20want%20to%20order%20a%20custom%20print.",
-  bulkWa:
-    "https://wa.me/917999865547?text=Hi!%20I%20want%20bulk%20order%20pricing.",
   instagram: "https://instagram.com/ar_printing_service",
   instagramHandle: "@ar_printing_service",
   location: "Bagicha, Jashpur",
 };
 
-interface Service {
-  icon: string;
-  title: string;
-  spec: string;
-  tab: "gold" | "cyan" | "magenta";
+function displayPhone(n: string): string {
+  const d = n.replace(/[^0-9]/g, "");
+  if (d.length === 12) return `+${d.slice(0, 2)} ${d.slice(2, 8)} ${d.slice(8)}`;
+  if (d.length === 10) return `${d.slice(0, 5)} ${d.slice(5)}`;
+  return n;
 }
 
-const SERVICES: Service[] = [
-  { icon: "👕", title: "T-Shirt Printing", spec: "Your design, any size", tab: "gold" },
-  { icon: "🧥", title: "Hoodie Printing", spec: "Cozy fits, bold prints", tab: "cyan" },
-  { icon: "🎽", title: "Jersey Printing", spec: "Team names & numbers", tab: "magenta" },
-  { icon: "☕", title: "Mug Printing", spec: "Coffee tastes better custom", tab: "gold" },
-  { icon: "🥤", title: "Cup Printing", spec: "For every celebration", tab: "cyan" },
-  { icon: "📱", title: "Mobile Cover Printing", spec: "Wrap your phone your way", tab: "magenta" },
-  { icon: "🧴", title: "Bottle Printing", spec: "Personalised, everyday", tab: "gold" },
-  { icon: "👜", title: "Bag Printing", spec: "Carry your own design", tab: "cyan" },
-  { icon: "🔑", title: "KeyRing Printing", spec: "Small gift, big smile", tab: "magenta" },
-  { icon: "🛋️", title: "Cushion Printing", spec: "Photos you can hug", tab: "gold" },
-  { icon: "🖼️", title: "Photo Frame Printing", spec: "Frame the good memories", tab: "cyan" },
-  { icon: "🎁", title: "Custom Gifts", spec: "Not sure? We'll design it", tab: "magenta" },
-];
+const CATEGORY_TAB: Record<string, "gold" | "cyan" | "magenta"> = {
+  Apparel: "gold",
+  Drinkware: "cyan",
+  Accessories: "magenta",
+  "Home & Gifts": "gold",
+};
 
 const TICKER = [
   "Custom Design",
@@ -65,6 +55,23 @@ const CATEGORIES = [
 ];
 
 export default function HomePage() {
+  const services = getProducts();
+
+  const settings = getSettings();
+  const phone = settings.phone || BUSINESS.phone;
+  const phoneDigits = phone.replace(/[^0-9]/g, "");
+  const waBase = `https://wa.me/${phoneDigits}`;
+  const waGeneral = `${waBase}?text=${encodeURIComponent("Hi! I am interested in your printing services.")}`;
+  const waOrder = `${waBase}?text=${encodeURIComponent("Hi! I want to order a custom print.")}`;
+  const waBulk = `${waBase}?text=${encodeURIComponent("Hi! I want bulk order pricing.")}`;
+  const instaHandle = settings.instagram ? `@${settings.instagram.replace("@", "")}` : BUSINESS.instagramHandle;
+  const instaLink = settings.instagram
+    ? `https://instagram.com/${settings.instagram.replace("@", "")}`
+    : BUSINESS.instagram;
+  const address = settings.address || BUSINESS.location;
+  const offerBadge = settings.offerBadge || "Special Offer";
+  const offerTitle = settings.offerTitle || "Ordering For A Group?";
+
   return (
     <>
       <style>{styles}</style>
@@ -77,36 +84,13 @@ export default function HomePage() {
             </span>
             <span className="logo-sub">{BUSINESS.sub}</span>
           </a>
-          <nav className="nav-links" id="navLinks">
-            <a href="#home">Home</a>
-            <a href="/products">Print Menu</a>
-            <a href="/products#">Categories</a>
-            <a href="#why">Why Us</a>
-            <a href="#contact">Contact</a>
-          </nav>
-          <a
-            className="nav-cta"
-            href={BUSINESS.whatsapp}
-            target="_blank"
-            rel="noopener"
-          >
-            WhatsApp
-          </a>
-          <button
-            className="menu-toggle"
-            id="menuToggle"
-            aria-label="Toggle menu"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+          <TopNav waHref={waGeneral} />
         </div>
       </header>
 
       <section className="hero" id="home">
         <div className="hero-inner">
-          <div className="hero-text">
+          <div className="hero-text reveal">
             <span className="eyebrow">✛ Custom Print & Gift Studio · Jashpur</span>
             <h1>
               EVERY PRINT.
@@ -122,7 +106,7 @@ export default function HomePage() {
             <div className="hero-btns">
               <a
                 className="btn btn-primary"
-                href={BUSINESS.orderWa}
+                href={waOrder}
                 target="_blank"
                 rel="noopener"
               >
@@ -192,19 +176,31 @@ export default function HomePage() {
 
       <section className="section" id="services">
         <div className="wrap">
-          <div className="section-head">
+          <div className="section-head reveal">
             <span className="eyebrow">✛ What We Print</span>
             <h2>The Print Menu</h2>
             <p>Pick a product, send your design — we'll handle the rest.</p>
           </div>
           <div className="services-grid">
-            {SERVICES.map((s) => (
-              <div className="ticket-card" key={s.title}>
-                <div className={`ticket-tab tab-${s.tab}`}></div>
-                <div className="ticket-body">
+            {services.length === 0 && (
+              <p className="ticket-spec">Menu abhi add nahi hua hai.</p>
+            )}
+            {services.map((s) => (
+              <div className="ticket-card reveal" key={s.id}>
+                <div className={`ticket-tab tab-${CATEGORY_TAB[s.category] ?? "gold"}`}></div>
+                {s.image ? (
+                  <div className="ticket-media">
+                    <img src={s.image} alt={s.name} loading="lazy" />
+                  </div>
+                ) : (
                   <div className="ticket-icon" aria-hidden="true">{s.icon}</div>
-                  <h3>{s.title}</h3>
-                  <p className="ticket-spec">{s.spec}</p>
+                )}
+                <div className="ticket-body">
+                  <h3>{s.name}</h3>
+                  <p className="ticket-spec">
+                    {s.description}
+                    {s.priceFrom ? `\u00A0· from ₹${s.priceFrom}` : ""}
+                  </p>
                 </div>
               </div>
             ))}
@@ -216,7 +212,7 @@ export default function HomePage() {
 
       <section className="section" id="why">
         <div className="wrap">
-          <div className="section-head">
+          <div className="section-head reveal">
             <span className="eyebrow">✛ The AR. Difference</span>
             <h2>Why People Come Back</h2>
           </div>
@@ -227,7 +223,7 @@ export default function HomePage() {
               { icon: "🎨", title: "Custom Design", spec: "Send your idea, we bring it to life", tab: "magenta" as const },
               { icon: "💰", title: "Best Price", spec: "Fair pricing, more savings in bulk", tab: "gold" as const },
             ].map((w) => (
-              <div className="ticket-card" key={w.title}>
+              <div className="ticket-card reveal" key={w.title}>
                 <div className={`ticket-tab tab-${w.tab}`}></div>
                 <div className="ticket-body">
                   <div className="ticket-icon" aria-hidden="true">{w.icon}</div>
@@ -242,13 +238,13 @@ export default function HomePage() {
 
       <section className="section" id="work">
         <div className="wrap">
-          <div className="section-head">
+          <div className="section-head reveal">
             <span className="eyebrow">✛ Four Ways To Customise</span>
             <h2>Pick Your Canvas</h2>
           </div>
           <div className="work-grid">
             {CATEGORIES.map((c) => (
-              <div className={`work-panel panel-${c.tone}`} key={c.name}>
+              <div className={`work-panel panel-${c.tone} reveal`} key={c.name}>
                 <h3>{c.name}</h3>
                 <p className="spec">{c.spec}</p>
               </div>
@@ -258,14 +254,14 @@ export default function HomePage() {
       </section>
 
       <div className="offer-wrap">
-        <div className="offer-box">
-          <div className="stamp">Special Offer</div>
-          <h3>Ordering For A Group?</h3>
+        <div className="offer-box reveal">
+          <div className="stamp">{offerBadge}</div>
+          <h3>{offerTitle}</h3>
           <p>
             Colleges, teams, offices, weddings — get custom pricing for bulk
             orders on WhatsApp.
           </p>
-          <a className="btn btn-primary" href={BUSINESS.bulkWa} target="_blank" rel="noopener">
+          <a className="btn btn-primary" href={waBulk} target="_blank" rel="noopener">
             Get Bulk Pricing
           </a>
         </div>
@@ -273,26 +269,26 @@ export default function HomePage() {
 
       <section className="section" id="contact">
         <div className="wrap">
-          <div className="section-head">
+          <div className="section-head reveal">
             <span className="eyebrow">✛ Let's Talk Prints</span>
             <h2>Get In Touch</h2>
           </div>
           <div className="contact-grid">
-            <a className="contact-card" href={`tel:${BUSINESS.phone}`}>
+            <a className="contact-card reveal" href={`tel:${phone}`}>
               <span className="clabel">Call</span>
-              <span className="cvalue">{BUSINESS.phoneDisplay}</span>
+              <span className="cvalue">{displayPhone(phone)}</span>
             </a>
-            <a className="contact-card" href={BUSINESS.whatsapp} target="_blank" rel="noopener">
+            <a className="contact-card reveal" href={waGeneral} target="_blank" rel="noopener">
               <span className="clabel">WhatsApp</span>
               <span className="cvalue">Chat Now</span>
             </a>
-            <a className="contact-card" href={BUSINESS.instagram} target="_blank" rel="noopener">
+            <a className="contact-card reveal" href={instaLink} target="_blank" rel="noopener">
               <span className="clabel">Instagram</span>
-              <span className="cvalue">{BUSINESS.instagramHandle}</span>
+              <span className="cvalue">{instaHandle}</span>
             </a>
-            <div className="contact-card">
+            <div className="contact-card reveal">
               <span className="clabel">Location</span>
-              <span className="cvalue">{BUSINESS.location}</span>
+              <span className="cvalue">{address}</span>
             </div>
           </div>
         </div>
@@ -300,16 +296,12 @@ export default function HomePage() {
 
       <footer>
         <p className="fname">{BUSINESS.name}</p>
-        <p className="fsub">© 2026 · Made with care in Jashpur</p>
-        <div className="fsocial">
-          <a href={BUSINESS.instagram} target="_blank" rel="noopener">Instagram</a>
-          <a href={BUSINESS.whatsapp} target="_blank" rel="noopener">WhatsApp</a>
-        </div>
+        <p className="fsub">© 2026 · Made with k.jurx/chandan/kujur</p>
       </footer>
 
       <a
         className="float-wa"
-        href={BUSINESS.whatsapp}
+        href={waGeneral}
         target="_blank"
         rel="noopener"
         aria-label="Chat on WhatsApp"
@@ -317,31 +309,10 @@ export default function HomePage() {
         💬
       </a>
 
-      <script
-        dangerouslySetInnerHTML={{ __html: clientScript }}
-      />
+      <RevealObserver />
     </>
   );
 }
-
-const clientScript = `
-  const menuToggle = document.getElementById('menuToggle');
-  const navLinks = document.getElementById('navLinks');
-  menuToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
-    menuToggle.classList.toggle('active');
-  });
-  navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      menuToggle.classList.remove('active');
-    });
-  });
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    navbar.style.background = window.scrollY > 40 ? 'rgba(12,12,13,0.92)' : 'rgba(12,12,13,0.75)';
-  });
-`;
 
 const styles = `
   :root{
@@ -388,12 +359,14 @@ const styles = `
   .ticket-card:hover{ transform:translateY(-6px); border-color:rgba(242,236,221,0.35); }
   .ticket-tab{ height:6px; width:100%; }
   .tab-gold{ background:var(--gold); } .tab-cyan{ background:var(--cyan); } .tab-magenta{ background:var(--magenta); }
-  .ticket-body{ padding:26px 22px; }
-  .ticket-icon{ font-size:2.1rem; margin-bottom:14px; }
+  .ticket-body{ padding:26px 22px; min-height:96px; }
+  .ticket-media img{ width:100%; height:200px; object-fit:cover; display:block; }
+  .ticket-icon{ font-size:2.1rem; margin-bottom:14px; padding:0 22px 0 22px; box-sizing:border-box; }
   .ticket-body h3{ font-family:'Work Sans',sans-serif; font-weight:700; font-size:1.08rem; color:var(--cream); margin-bottom:6px; }
   .ticket-spec{ font-family:'IBM Plex Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--body-text); }
 
   .navbar{ position:fixed; top:0; left:0; right:0; z-index:1000; background:rgba(12,12,13,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .navbar.scrolled{ background:rgba(12,12,13,0.92); }
   .nav-inner{ max-width:1180px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:18px; }
   .logo{ display:flex; align-items:baseline; gap:8px; }
   .logo-mark{ font-family:'Big Shoulders Display',sans-serif; font-weight:800; font-size:1.7rem; color:var(--cream); }
@@ -497,5 +470,7 @@ const styles = `
   @media (prefers-reduced-motion:reduce){
     *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
   }
+  .reveal{ opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.active{ opacity:1; transform:translateY(0); }
   a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:4px; }
 `;

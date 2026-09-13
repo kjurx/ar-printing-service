@@ -57,7 +57,7 @@ export default async function ProductsPage({
           {products.length === 0 && <p className="pr-empty">No products in this category.</p>}
           {products.map((p) => (
             <div className="pr-card" key={p.id}>
-              <span className="pr-icon">{p.icon}</span>
+              <span className="pr-icon">{p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : p.icon}</span>
               <h3 className="pr-name">{p.name}</h3>
               <p className="pr-desc">{p.description}</p>
               <div className="pr-specs">
@@ -66,9 +66,7 @@ export default async function ProductsPage({
               </div>
               <a
                 className="pr-order"
-                target="_blank"
-                rel="noopener"
-                href={whatsappLink(`Hi! I want to order *${p.name}*. ${p.priceFrom ? `(Price ~₹${p.priceFrom}) ` : ""}Please share details.`)}
+                href={`/order?product=${encodeURIComponent(p.slug)}`}
               >
                 Order now →
               </a>
@@ -108,6 +106,7 @@ const productsStyles = `
   .pr-card{ background:#161615; border:1.5px solid rgba(242,236,221,0.14); border-radius:12px; padding:24px 22px; display:flex; flex-direction:column; transition:transform .25s ease, border-color .25s ease; }
   .pr-card:hover{ transform:translateY(-5px); border-color:rgba(242,236,221,0.4); }
   .pr-icon{ font-size:2.2rem; margin-bottom:12px; }
+  .pr-icon img{ width:100%; height:200px; object-fit:cover; border-radius:10px; margin-bottom:4px; }
   .pr-name{ font-size:1.05rem; font-weight:700; color:#f2ecdd; margin:0 0 4px; }
   .pr-desc{ font-size:0.9rem; margin:0 0 14px; flex:1; }
   .pr-specs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }

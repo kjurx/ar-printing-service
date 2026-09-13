@@ -81,6 +81,14 @@ export default function OrdersManager() {
                 {o.size ? ` · Size ${o.size}` : ""}
                 {o.designNote ? ` · "${o.designNote}"` : ""}
               </div>
+              {o.design && (
+                <div className="ord-design">
+                  <a href={o.design} target="_blank" rel="noopener">
+                    <img src={o.design} alt="design" />
+                  </a>
+                  <span>Design attached</span>
+                </div>
+              )}
               <div className="ord-bottom">
                 <span className="ord-date">{new Date(o.createdAt).toLocaleString()}</span>
                 <a
@@ -115,6 +123,9 @@ const ordStyles = `
   .ord-customer{ color:#f2ecdd; font-weight:700; font-size:1.05rem; }
   .ord-status{ background:#0c0c0d; color:#f2ecdd; border:1px solid rgba(242,236,221,0.25); border-radius:6px; padding:8px 10px; }
   .ord-meta{ color:#b6b0a2; font-size:0.92rem; margin-bottom:10px; }
+  .ord-design{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .ord-design img{ width:56px; height:56px; object-fit:cover; border-radius:8px; }
+  .ord-design span{ font-family:'IBM Plex Mono',monospace; font-size:0.7rem; text-transform:uppercase; color:#2fb6c4; }
   .ord-bottom{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
   .ord-date{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:#6f6a5f; }
   .ord-wa{ color:#25D366; font-size:0.85rem; font-weight:600; }

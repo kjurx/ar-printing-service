@@ -10,6 +10,7 @@ const EMPTY_FORM = {
   category: "Apparel" as Category,
   description: "",
   icon: "🎁",
+  image: "" as string | null,
   priceFrom: "",
   sizeRange: "",
   sortOrder: "0",
@@ -22,6 +23,7 @@ export default function ProductManager() {
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/products");
@@ -39,6 +41,7 @@ export default function ProductManager() {
     setError(null);
     const payload = {
       ...form,
+      image: form.image || null,
       priceFrom: form.priceFrom ? Number(form.priceFrom) : null,
       sortOrder: Number(form.sortOrder) || 0,
       isActive: true,
@@ -65,6 +68,26 @@ export default function ProductManager() {
     load();
   }
 
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setForm((f) => ({ ...f, image: data.url as string }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
+
   async function remove(id: string) {
     if (!window.confirm("Delete this product?")) return;
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
@@ -79,6 +102,7 @@ export default function ProductManager() {
       category: p.category,
       description: p.description,
       icon: p.icon,
+      image: p.image || "",
       priceFrom: p.priceFrom ? String(p.priceFrom) : "",
       sizeRange: p.sizeRange || "",
       sortOrder: String(p.sortOrder),
@@ -124,6 +148,16 @@ export default function ProductManager() {
             <label className="pm-label">Icon (emoji)
               <input className="pm-input" value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} />
             </label>
+            <label className="pm-label">Image (chune to icon ki jagah dikhega)
+              <input className="pm-input" type="file" accept="image/*" onChange={handleUpload} disabled={uploading} />
+            </label>
+            {form.image && (
+              <div className="pm-preview">
+                <img src={form.image} alt="preview" />
+                <span>{uploading ? "Uploading…" : "Uploaded"}</span>
+                <button type="button" className="pm-img-remove" onClick={() => setForm({ ...form, image: null })}>Remove image</button>
+              </div>
+            )}
             <label className="pm-label">Price from (₹)
               <input className="pm-input" type="number" min="0" value={form.priceFrom} onChange={(e) => setForm({ ...form, priceFrom: e.target.value })} />
             </label>
@@ -160,7 +194,7 @@ export default function ProductManager() {
           <tbody>
             {products.map((p) => (
               <tr key={p.id}>
-                <td><span className="pm-icon">{p.icon}</span></td>
+                <td>{p.image ? <img className="pm-thumb" src={p.image} alt={p.name} /> : <span className="pm-icon">{p.icon}</span>}</td>
                 <td className="pm-name">{p.name}</td>
                 <td><span className="pm-cat">{p.category}</span></td>
                 <td>{p.priceFrom ? `₹${p.priceFrom}` : "—"}</td>
@@ -199,6 +233,11 @@ const pmStyles = `
   .pm-table th{ text-align:left; font-family:'IBM Plex Mono',monospace; font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase; color:#b6b0a2; padding:14px 16px; border-bottom:1px solid rgba(242,236,221,0.14); }
   .pm-table td{ padding:14px 16px; border-bottom:1px solid rgba(242,236,221,0.08); color:#d9d4c8; font-size:0.92rem; }
   .pm-icon{ font-size:1.3rem; }
+  .pm-thumb{ width:44px; height:44px; object-fit:cover; border-radius:8px; display:block; }
+  .pm-preview{ display:flex; align-items:center; gap:10px; background:#0c0c0d; border:1px solid rgba(242,236,221,0.14); border-radius:8px; padding:10px 12px; margin-bottom:12px; }
+  .pm-preview img{ width:56px; height:56px; object-fit:cover; border-radius:8px; }
+  .pm-preview span{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:#2fb6c4; }
+  .pm-img-remove{ background:rgba(221,74,128,0.15); color:#dd4a80; border:none; padding:7px 12px; border-radius:6px; cursor:pointer; font-size:0.78rem; margin-left:auto; }
   .pm-name{ color:#f2ecdd; font-weight:600; }
   .pm-cat{ font-family:'IBM Plex Mono',monospace; font-size:0.68rem; text-transform:uppercase; color:#e0a53c; }
   .pm-actions{ display:flex; gap:8px; }

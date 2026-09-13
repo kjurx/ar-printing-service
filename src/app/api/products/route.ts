@@ -30,6 +30,10 @@ export async function POST(req: NextRequest) {
     category: body.category || "Apparel",
     description: body.description?.trim() || "",
     icon: body.icon || "🎁",
+    image:
+      typeof body.image === "string" && body.image.startsWith("/uploads/")
+        ? body.image
+        : null,
     priceFrom:
       typeof body.priceFrom === "number" && body.priceFrom > 0
         ? Math.round(body.priceFrom)

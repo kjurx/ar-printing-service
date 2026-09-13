@@ -30,6 +30,10 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     category: body?.category || existing.category,
     description: body?.description?.trim() ?? existing.description,
     icon: body?.icon || existing.icon,
+    image:
+      typeof body?.image === "string" && body.image.startsWith("/uploads/")
+        ? body.image
+        : existing.image || null,
     priceFrom:
       typeof body?.priceFrom === "number" && body.priceFrom > 0
         ? Math.round(body.priceFrom)

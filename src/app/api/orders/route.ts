@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
     quantity: Math.max(1, Number(body.quantity) || 1),
     size: body?.size?.trim() || null,
     designNote: body?.designNote?.trim() || null,
+    design:
+      typeof body?.design === "string" && body.design.startsWith("/uploads/")
+        ? body.design
+        : null,
     status: "NEW" as const,
     createdAt: new Date().toISOString(),
   };

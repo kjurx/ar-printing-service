@@ -16,7 +16,7 @@
   "orders": [
     {
       "id": "ord-1001",
-      "customer": "Rahul Verma",
+      "customer": "envi",
       "phone": "9876543210",
       "product": "T-Shirt Printing",
       "quantity": 10,
@@ -27,7 +27,7 @@
     },
     {
       "id": "ord-1002",
-      "customer": "Priya Sahu",
+      "customer": "meoow",
       "phone": "9123456780",
       "product": "Mug Printing",
       "quantity": 2,
