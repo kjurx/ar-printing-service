@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-
-const UPLOAD_DIR = path.join(process.cwd(), "data", "uploads");
+import { UPLOAD_DIR } from "@/lib/db/storage";
 
 const MIME: Record<string, string> = {
   jpg: "image/jpeg",
@@ -26,10 +25,13 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
   }
   const ext = name.split(".").pop()?.toLowerCase() || "";
   const body = fs.readFileSync(file);
-  return new NextResponse(body, {
-    headers: {
-      "Content-Type": MIME[ext] || "application/octet-stream",
-      "Cache-Control": "public, max-age=31536000, immutable",
-    },
-  });
+  const headers: Record<string, string> = {
+    "Content-Type": MIME[ext] || "application/octet-stream",
+    "Cache-Control": "public, max-age=31536000, immutable",
+    "X-Content-Type-Options": "nosniff",
+  };
+  if (ext === "svg") {
+    headers["Content-Disposition"] = "attachment";
+  }
+  return new NextResponse(body, { headers });
 }

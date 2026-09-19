@@ -2,8 +2,16 @@ import crypto from "crypto";
 import { cookies } from "next/headers";
 
 const COOKIE = "ar_session";
-const SECRET = process.env.SESSION_SECRET || "dev-insecure-secret-change-me";
+const SECRET = process.env.SESSION_SECRET;
 const TTL_MS = 24 * 60 * 60 * 1000;
+
+function getSecret(): string {
+  if (SECRET) return SECRET;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("SESSION_SECRET environment variable is required in production");
+  }
+  return "dev-insecure-secret-change-me";
+}
 
 interface SessionPayload {
   email: string;
@@ -12,7 +20,7 @@ interface SessionPayload {
 }
 
 function sign(data: string): string {
-  return crypto.createHmac("sha256", SECRET).update(data).digest("base64url");
+  return crypto.createHmac("sha256", getSecret()).update(data).digest("base64url");
 }
 
 export function createToken(payload: SessionPayload): string {
@@ -45,4 +53,3 @@ export function createSessionCookie(email: string, name: string) {
 }
 
 export { COOKIE };
-export const DEFAULT_ADMIN_PASSWORD = "admin123";

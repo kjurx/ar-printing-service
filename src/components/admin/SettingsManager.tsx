@@ -70,14 +70,6 @@ export default function SettingsManager() {
           {status && <span className="set-status">{status}</span>}
         </div>
       </form>
-
-      <style>{`
-        .set-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:0 18px; }
-        .set-form{ background:#161615; border:1px solid rgba(242,236,221,0.14); border-radius:12px; padding:24px; max-width:760px; }
-        .set-actions{ display:flex; align-items:center; gap:14px; margin-top:8px; }
-        .set-status{ color:#5ad278; font-size:0.9rem; }
-      `}
-      </style>
     </>
   );
 }

@@ -106,28 +106,6 @@ export default function OrdersManager() {
           ))}
         </div>
       )}
-
-      <style>{ordStyles}</style>
     </>
   );
 }
-
-const ordStyles = `
-  .ord-filters{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
-  .ord-filter{ background:#161615; border:1px solid rgba(242,236,221,0.2); color:#b6b0a2; padding:9px 14px; border-radius:999px; cursor:pointer; font-size:0.82rem; }
-  .ord-filter.on{ background:#e0a53c; color:#0c0c0d; border-color:#e0a53c; font-weight:700; }
-  .ord-empty{ color:#6f6a5f; }
-  .ord-list{ display:flex; flex-direction:column; gap:14px; max-width:820px; }
-  .ord-card{ background:#161615; border:1px solid rgba(242,236,221,0.14); border-radius:12px; padding:18px 20px; }
-  .ord-top{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px; }
-  .ord-customer{ color:#f2ecdd; font-weight:700; font-size:1.05rem; }
-  .ord-status{ background:#0c0c0d; color:#f2ecdd; border:1px solid rgba(242,236,221,0.25); border-radius:6px; padding:8px 10px; }
-  .ord-meta{ color:#b6b0a2; font-size:0.92rem; margin-bottom:10px; }
-  .ord-design{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .ord-design img{ width:56px; height:56px; object-fit:cover; border-radius:8px; }
-  .ord-design span{ font-family:'IBM Plex Mono',monospace; font-size:0.7rem; text-transform:uppercase; color:#2fb6c4; }
-  .ord-bottom{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-  .ord-date{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:#6f6a5f; }
-  .ord-wa{ color:#25D366; font-size:0.85rem; font-weight:600; }
-  .ord-wa:hover{ text-decoration:underline; }
-`;

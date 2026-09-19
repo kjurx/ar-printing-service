@@ -6,9 +6,10 @@ import type { Product } from "@/types";
 interface Props {
   products: Product[];
   preselected?: string;
+  whatsapp?: string;
 }
 
-export default function OrderForm({ products, preselected = "" }: Props) {
+export default function OrderForm({ products, preselected = "", whatsapp = "917999865547" }: Props) {
   const [productSlug, setProductSlug] = useState(preselected);
   const [customer, setCustomer] = useState("");
   const [phone, setPhone] = useState("");
@@ -90,7 +91,7 @@ export default function OrderForm({ products, preselected = "" }: Props) {
         <p className="of-done-id">Order ID: <strong>{done.id}</strong></p>
         <p className="of-done-item">{done.product}</p>
         <p>Hum jaldi hi WhatsApp/phone par confirm kar denge. Jaldi confirmation ke liye neeche WhatsApp bhi kar sakte ho:</p>
-        <a className="of-wa" target="_blank" rel="noopener" href={`https://wa.me/917999865547?text=${waMsg}`}>
+        <a className="of-wa" target="_blank" rel="noopener" href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, "")}?text=${waMsg}`}>
           Send on WhatsApp →
         </a>
       </div>

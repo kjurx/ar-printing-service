@@ -9,8 +9,13 @@ export const BUSINESS = {
   instagramHandle: "@ar_printing_service",
 };
 
-export function whatsappLink(message: string): string {
-  return `https://wa.me/917999865547?text=${encodeURIComponent(message)}`;
+export function whatsappDigits(settings?: Record<string, string>): string {
+  const raw = settings?.whatsapp || settings?.phone || BUSINESS.phone;
+  return raw.replace(/[^0-9]/g, "");
+}
+
+export function whatsappLink(phone: string, message: string): string {
+  return `https://wa.me/${phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(message)}`;
 }
 
 export const WA_QUERIES = {

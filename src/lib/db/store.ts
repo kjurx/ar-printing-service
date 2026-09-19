@@ -3,8 +3,37 @@ import path from "path";
 import crypto from "crypto";
 import type { DBShape, Product, Order } from "@/types";
 import { ORDER_STATUSES } from "@/types";
+import { DATA_DIR } from "./storage";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const SCRYPT_PREFIX = "scrypt$";
+const LEGACY_SHA256 = /^[a-f0-9]{64}$/;
+
+export function hashPassword(password: string): string {
+  const salt = crypto.randomBytes(16);
+  const hash = crypto.scryptSync(password, salt, 64);
+  return `${SCRYPT_PREFIX}${hash.toString("hex")}$${salt.toString("hex")}`;
+}
+
+export function verifyPassword(password: string, stored: string): boolean {
+  if (stored.startsWith(SCRYPT_PREFIX)) {
+    const [, hashHex, saltHex] = stored.split("$");
+    if (!hashHex || !saltHex) return false;
+    try {
+      const expected = Buffer.from(hashHex, "hex");
+      const candidate = crypto.scryptSync(password, Buffer.from(saltHex, "hex"), 64);
+      return (
+        expected.length === candidate.length && crypto.timingSafeEqual(expected, candidate)
+      );
+    } catch {
+      return false;
+    }
+  }
+  if (LEGACY_SHA256.test(stored)) {
+    return crypto.createHash("sha256").update(password).digest("hex") === stored;
+  }
+  return false;
+}
+
 const DB_FILE = path.join(DATA_DIR, "db.json");
 const SEED_FILE = path.join(process.cwd(), "src", "data", "seed.json");
 
@@ -24,11 +53,9 @@ function read(): DBShape {
 
 function write(db: DBShape) {
   ensureDir();
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
-}
-
-export function sha256(value: string): string {
-  return crypto.createHash("sha256").update(value).digest("hex");
+  const tmp = path.join(DATA_DIR, `db.json.tmp-${process.pid}`);
+  fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
+  fs.renameSync(tmp, DB_FILE);
 }
 
 export function verifyAdmin(email: string, password: string) {
@@ -37,7 +64,12 @@ export function verifyAdmin(email: string, password: string) {
     (a) => a.email.toLowerCase() === email.toLowerCase()
   );
   if (!admin) return null;
-  if (admin.passwordHash !== sha256(password)) return null;
+  if (!verifyPassword(password, admin.passwordHash)) return null;
+  if (!admin.passwordHash.startsWith(SCRYPT_PREFIX)) {
+    const idx = db.admins.indexOf(admin);
+    db.admins[idx] = { ...admin, passwordHash: hashPassword(password) };
+    write(db);
+  }
   return { email: admin.email, name: admin.name };
 }
 

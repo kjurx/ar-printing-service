@@ -41,7 +41,7 @@
     {
       "email": "admin@arprint.in",
       "name": "Admin",
-      "passwordHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"
+      "passwordHash": "scrypt$2f8c8f715fb313d28310c4b80839c5ce57ce682116aa6265062a4fbd2eb09d24b6e9e98bc4c23192b2a49863fcd4d84de1ffdf6adc381ac6e42ac3c6bc6d99d0$383ca93dd819311d944cea19b7d023e8"
     }
   ],
   "settings": {

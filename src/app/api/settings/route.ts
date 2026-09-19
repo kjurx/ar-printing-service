@@ -15,6 +15,9 @@ export async function PUT(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (Number(req.headers.get("content-length") || 0) > 64 * 1024) {
+    return NextResponse.json({ error: "Request too large" }, { status: 413 });
+  }
   const body = await req.json().catch(() => null);
   if (!body || typeof body !== "object") {
     return NextResponse.json({ error: "invalid settings" }, { status: 400 });
