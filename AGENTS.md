@@ -37,8 +37,9 @@ npm run db:seed    # copy src/data/seed.json -> data/db.json (resets ALL data)
 
 ## Uploads
 
-- POST `/api/upload` writes to `data/uploads/` (gitignored); files are served by the dynamic route `src/app/uploads/[name]/route.ts`. Allowed: jpg/png/webp/gif/svg, max 5MB.
-- **Permanent product photos live in `public/img/` (committed)** and are referenced as `/img/...` — survives deploy/cold start. Admin uploads return `/uploads/...` (ephemeral on Vercel demo mode). When persisting an image/design path it must start with `/uploads/` or `/img/`, or APIs reject it (products, orders).
+- POST `/api/upload` writes to `data/uploads/` (gitignored) OR to **Vercel Blob Storage** when `BLOB_READ_WRITE_TOKEN` is set (persistent, survives cold starts). Server-published files are served by the dynamic route `src/app/uploads/[name]/route.ts`; blob files are served by Vercel's CDN. Allowed: jpg/png/webp/gif/svg, max 5MB.
+- **Permanent product photos live in `public/img/` (committed)** and are referenced as `/img/...` — survives deploy/cold start. Admin uploads return `/uploads/...` (local) or a `*.public.blob.vercel-storage.com` URL (Vercel). When persisting an image/design path it must be `/uploads/...`, `/img/...` or a blob URL (see `src/lib/media.ts` `isMediaUrl`), or APIs reject it (products, orders).
+- Deleting admin uploads: `DELETE /api/uploads` (admin-only) removes a blob file or a local `/uploads/...` file. `ProductManager` auto-deletes the old uploaded image on save/replace/delete; committed `/img/` assets are never deleted at runtime.
 - Always seed→restart check: `data/db.json` regenerates from seed if deleted, so destructive edits inside it are cheap to recover.
 
 ## Conventions

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProducts, getAllProducts, saveProduct } from "@/lib/db/store";
 import { getSession } from "@/lib/auth/session";
+import { isMediaUrl } from "@/lib/media";
 import type { Product, Category } from "@/types";
 
 const CATEGORIES: Category[] = ["Apparel", "Drinkware", "Accessories", "Home & Gifts"];
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
     description: body.description?.trim() || "",
     icon: body.icon?.trim() || "🎁",
     image:
-      typeof body.image === "string" && /^\/(uploads|img)\//.test(body.image)
+      typeof body.image === "string" && isMediaUrl(body.image)
         ? body.image
         : null,
     priceFrom:

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllProducts, saveProduct, deleteProduct } from "@/lib/db/store";
 import { getSession } from "@/lib/auth/session";
+import { isMediaUrl } from "@/lib/media";
 import type { Product, Category } from "@/types";
 
 const CATEGORIES: Category[] = ["Apparel", "Drinkware", "Accessories", "Home & Gifts"];
@@ -49,7 +50,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
         ? body.icon.trim()
         : existing.icon || "🎁",
     image:
-      typeof body?.image === "string" && /^\/(uploads|img)\//.test(body.image)
+      typeof body?.image === "string" && isMediaUrl(body.image)
         ? body.image
         : typeof body?.image === "string"
           ? existing.image || null

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import { put } from "@vercel/blob";
 import { isRateLimited, clientIp, UPLOAD_MAX, UPLOAD_WINDOW_MS } from "@/lib/auth/rateLimit";
 import { UPLOAD_DIR } from "@/lib/db/storage";
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"]);
@@ -91,8 +92,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
   const name = `${Date.now().toString(36)}-${crypto.randomBytes(4).toString("hex")}.${EXT[type]}`;
+
+  if (token) {
+    const blob = await put(`uploads/${name}`, buffer, {
+      access: "public",
+      addRandomSuffix: false,
+      contentType: type,
+      token,
+    });
+    return NextResponse.json({ url: blob.url }, { status: 201 });
+  }
+
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
   const tmp = path.join(UPLOAD_DIR, `${name}.tmp`);
   fs.writeFileSync(tmp, buffer);
   fs.renameSync(tmp, path.join(UPLOAD_DIR, name));

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOrders, addOrder, updateOrderStatus } from "@/lib/db/store";
 import { getSession } from "@/lib/auth/session";
+import { isMediaUrl } from "@/lib/media";
 
 const MAX_BODY = 64 * 1024;
 const PHONE_RE = /^[+\d][\d\s().-]{6,19}$/;
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
     typeof body?.designNote === "string" ? body.designNote.trim().slice(0, 1000) || null : null;
   const design =
     typeof body?.design === "string" &&
-    body.design.startsWith("/uploads/") &&
+    isMediaUrl(body.design) &&
     body.design.length <= 200
       ? body.design
       : null;

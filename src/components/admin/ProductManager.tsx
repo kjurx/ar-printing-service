@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Product, Category } from "@/types";
+import { isDeleteableUpload } from "@/lib/media";
 
 const CATEGORIES: Category[] = ["Apparel", "Drinkware", "Accessories", "Home & Gifts"];
 
@@ -36,6 +37,19 @@ export default function ProductManager() {
     load();
   }, [load]);
 
+  async function deleteStoredImage(url: string | null | undefined) {
+    if (!url || !isDeleteableUpload(url)) return;
+    try {
+      await fetch("/api/uploads", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+    } catch {
+      // best-effort; the reference is cleared no matter what
+    }
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -61,6 +75,9 @@ export default function ProductManager() {
     if (!res.ok) {
       setError(data.error || "Something went wrong");
       return;
+    }
+    if (editing && editing.image !== payload.image) {
+      deleteStoredImage(editing.image);
     }
     setCreating(false);
     setEditing(null);
@@ -90,6 +107,8 @@ export default function ProductManager() {
 
   async function remove(id: string) {
     if (!window.confirm("Delete this product?")) return;
+    const product = products.find((p) => p.id === id);
+    if (product) await deleteStoredImage(product.image);
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
     if (res.ok) load();
   }
