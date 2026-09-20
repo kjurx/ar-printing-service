@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     description: body.description?.trim() || "",
     icon: body.icon?.trim() || "🎁",
     image:
-      typeof body.image === "string" && body.image.startsWith("/uploads/")
+      typeof body.image === "string" && /^\/(uploads|img)\//.test(body.image)
         ? body.image
         : null,
     priceFrom:

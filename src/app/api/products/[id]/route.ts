@@ -49,7 +49,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
         ? body.icon.trim()
         : existing.icon || "🎁",
     image:
-      typeof body?.image === "string" && body.image.startsWith("/uploads/")
+      typeof body?.image === "string" && /^\/(uploads|img)\//.test(body.image)
         ? body.image
         : typeof body?.image === "string"
           ? existing.image || null

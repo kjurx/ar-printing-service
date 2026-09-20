@@ -37,8 +37,8 @@ npm run db:seed    # copy src/data/seed.json -> data/db.json (resets ALL data)
 
 ## Uploads
 
-- POST `/api/upload` writes to `data/uploads/` (gitignored); files are served by the dynamic route `src/app/uploads/[name]/route.ts`.
-- Allowed: jpg/png/webp/gif/svg, max 5MB. When persisting an image/design path, it must start with `/uploads/` or APIs reject it (products, orders).
+- POST `/api/upload` writes to `data/uploads/` (gitignored); files are served by the dynamic route `src/app/uploads/[name]/route.ts`. Allowed: jpg/png/webp/gif/svg, max 5MB.
+- **Permanent product photos live in `public/img/` (committed)** and are referenced as `/img/...` — survives deploy/cold start. Admin uploads return `/uploads/...` (ephemeral on Vercel demo mode). When persisting an image/design path it must start with `/uploads/` or `/img/`, or APIs reject it (products, orders).
 - Always seed→restart check: `data/db.json` regenerates from seed if deleted, so destructive edits inside it are cheap to recover.
 
 ## Conventions
